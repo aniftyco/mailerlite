@@ -1,43 +1,24 @@
 import { MailerLite } from '../MailerLite';
+import { SubscriberTypes, Subscriber } from './Subscriber';
 
-type SubscriberTypes =
-  | 'active'
-  | 'unsubscribed'
-  | 'bounced'
-  | 'junk'
-  | 'unconfirmed';
-
-type QueryParams = {
+export type QueryParams = {
   limit?: number;
   offset?: number;
 };
 
-type AllQueryParams = QueryParams & {
+export type AllQueryParams = QueryParams & {
   type?: SubscriberTypes;
 };
 
-type Subscriber = {
-  id: number;
-  email: string;
-  name: string;
-  sent: number;
-  opened: number;
-  clicked: number;
-  type: SubscriberTypes;
-  signupIp: string;
-  signupTimestamp: string;
-  confirmationTimestamp: string;
-  fields: Record<string, any>;
-  dateSubscribed: string;
-  dateUnsubscribed: string;
-  dateCreated: string;
-  dateUpdated: string;
+export type SubscriberFields<Fields> = Fields & {
+  city?: string;
+  company?: string;
 };
 
-type CreateData = {
+export type CreateSubscriber<Fields> = {
   email: string;
   name?: string;
-  fields?: Record<string, any>;
+  fields?: SubscriberFields<Fields>;
   resubscribe?: boolean;
   type?: 'unsubscribed' | 'active' | 'unconfirmed';
   signupIp?: string;
@@ -46,8 +27,30 @@ type CreateData = {
   confirmationTimestamp?: string;
 };
 
-type SearchQueryParams = QueryParams & {
-  query: string;
+export type SearchQueryParams = QueryParams & {
+  minimized?: boolean;
+};
+
+export type MinimizedSubscriber = Subscriber & {
+  readonly email: string;
+  readonly type: SubscriberTypes;
+};
+
+export type FullSubscriber = Subscriber & {
+  readonly email: string;
+  readonly type: SubscriberTypes;
+  readonly name: string;
+  readonly sent: number;
+  readonly opened: number;
+  readonly clicked: number;
+  readonly signupIp: string;
+  readonly signupTimestamp: string;
+  readonly confirmationTimestamp: string;
+  readonly fields: Record<string, any>;
+  readonly dateSubscribed: string;
+  readonly dateUnsubscribed: string;
+  readonly dateCreated: string;
+  readonly dateUpdated: string;
 };
 
 export class Subscribers {
@@ -58,7 +61,11 @@ export class Subscribers {
   }
 
   public async all(params?: AllQueryParams) {
-    return this.client.get<Subscriber[]>('/subscribers', params);
+    const subscribers = await this.client.get('/subscribers', params);
+
+    return subscribers.map(
+      (subscriber: FullSubscriber) => new Subscriber(subscriber, this.client)
+    ) as FullSubscriber[];
   }
 
   public async active(params?: QueryParams) {
@@ -81,15 +88,36 @@ export class Subscribers {
     return this.all({ ...params, type: 'unconfirmed' });
   }
 
-  public async create(data: CreateData) {
-    return this.client.post<Subscriber>('/subscribers', data);
+  public async create<Fields = Record<string, any>>(
+    data: CreateSubscriber<Fields>
+  ) {
+    const subscriber = await this.client.post('/subscribers', data);
+
+    return new Subscriber(subscriber, this.client) as FullSubscriber;
   }
 
-  public async get(identifier: string) {
-    return this.client.get<Subscriber>(`/subscribers/${identifier}`);
+  public async get(identifier: string | number) {
+    const subscriber = this.client.get(`/subscribers/${identifier}`);
+
+    return new Subscriber(subscriber, this.client) as FullSubscriber;
   }
 
-  public async search(params: SearchQueryParams) {
-    return this.client.get<Subscriber[]>('/subscribers/search', params);
+  public async search<
+    Params extends SearchQueryParams,
+    Subscriber = Params['minimized'] extends true
+      ? MinimizedSubscriber
+      : FullSubscriber
+  >(query: string, params?: Params): Promise<Subscriber[]> {
+    const subscribers = await this.client.get<Subscriber[]>(
+      '/subscribers/search',
+      {
+        query,
+        ...params,
+      }
+    );
+
+    return subscribers.map((subscriber) => {
+      return new Subscriber(subscriber, this.client) as any;
+    });
   }
 }
