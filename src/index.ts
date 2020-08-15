@@ -1,1 +1,1 @@
-export const hello = (name = 'World') => `Hello, ${name}!`;
+export * from './MailerLite';
