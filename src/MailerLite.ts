@@ -18,7 +18,7 @@ const { version: VERSION } = JSON.parse(
 
 export class MailerLite {
   private version = VERSION;
-  private baseUrl = 'https://api.mailerlite.com/api/';
+  private baseUrl = 'https://api.mailerlite.com/api/v2';
   private userAgent = 'MailerLite Node.js SDK (https://git.io/mailerlite)';
   private client: AxiosInstance = null;
 
