@@ -19,7 +19,6 @@ const { version: VERSION } = JSON.parse(
 export class MailerLite {
   private version = VERSION;
   private baseUrl = 'https://api.mailerlite.com/api/v2';
-  private userAgent = 'MailerLite Node.js SDK (https://git.io/mailerlite)';
   private client: AxiosInstance = null;
 
   public campaigns: Campaigns;
@@ -35,7 +34,7 @@ export class MailerLite {
     this.client = axios.create({
       baseURL: this.baseUrl,
       headers: {
-        'User-Agent': `${this.userAgent} / ${this.version}`,
+        'User-Agent': `MailerLite Node.js SDK/v${this.version} (https://git.io/mailerlite)`,
         'X-MailerLite-ApiKey': apiKey,
         'Content-Type': 'application/json',
       },
