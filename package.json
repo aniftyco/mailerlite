@@ -22,7 +22,11 @@
     "lib"
   ],
   "eslintConfig": {
-    "extends": "nifty"
+    "extends": "nifty",
+    "rules": {
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/no-explicit-any": "off"
+    }
   },
   "prettier": {
     "singleQuote": true
