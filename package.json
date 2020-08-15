@@ -16,9 +16,11 @@
     }
   ],
   "scripts": {
-    "prepublishOnly": "rimraf lib && tsc",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "preversion": "jest",
+    "postversion": "git push --follow-tags",
+    "prepublishOnly": "rimraf lib && tsc"
   },
   "files": [
     "lib"
