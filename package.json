@@ -3,6 +3,7 @@
   "description": "Node module for MailerLite HTTP API v2",
   "version": "0.0.0",
   "repository": "aniftyco/mailerlite",
+  "main": "lib/index.js",
   "author": {
     "name": "Nifty Development, LLC",
     "email": "support@aniftyco.com",
@@ -15,6 +16,7 @@
     }
   ],
   "scripts": {
+    "prepublishOnly": "rimraf lib && tsc",
     "build": "tsc",
     "test": "jest"
   },
@@ -52,6 +54,7 @@
     "eslint-config-nifty": "^3.0.0-rc.8",
     "jest": "^26.4.0",
     "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
     "ts-jest": "^26.2.0",
     "typescript": "^3.9.7"
   },
