@@ -5,7 +5,7 @@
 ## Intallation
 
 ```sh
-yarn add mailerlite
+yarn add mailerlite@next
 ```
 
 ## Usage
