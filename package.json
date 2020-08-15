@@ -1,7 +1,7 @@
 {
   "name": "mailerlite",
   "description": "Node module for MailerLite HTTP API v2",
-  "version": "1.0.0-canary.1",
+  "version": "1.0.0-canary.2",
   "repository": "aniftyco/mailerlite",
   "main": "lib/index.js",
   "author": {
