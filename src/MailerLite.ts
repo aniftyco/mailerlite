@@ -1,6 +1,8 @@
 import { join } from 'path';
 import { readFileSync } from 'fs';
 import axios, { AxiosInstance } from 'axios';
+import isObject from 'lodash.isobject';
+import { toCamel, toSnake } from 'convert-keys';
 import {
   Campaigns,
   Fields,
@@ -38,6 +40,18 @@ export class MailerLite {
         'X-MailerLite-ApiKey': apiKey,
         'Content-Type': 'application/json',
       },
+    });
+
+    this.client.interceptors.request.use((request) => {
+      if (!!request.data && isObject(request.data)) {
+        request.data = toSnake(request.data);
+      }
+
+      return request;
+    });
+
+    this.client.interceptors.response.use((response) => {
+      return toCamel(response.data);
     });
 
     this.campaigns = new Campaigns(this);
